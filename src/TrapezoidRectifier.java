@@ -119,21 +119,18 @@ public class TrapezoidRectifier {
             double yScale = (double) src.rows() / h;
 
             Point[] scaledPoints = selectedPoints.stream()
-                .map(p -> new Point((int) (p.x * xScale), (int) (p.y * yScale)))
+                .map(p -> new Point(p.x * xScale, p.y * yScale))
                 .toArray(Point[]::new);
 
             MatOfPoint2f srcPoints = new MatOfPoint2f(
-                new org.opencv.core.Point(scaledPoints[0].x, scaledPoints[0].y),
-                new org.opencv.core.Point(scaledPoints[1].x, scaledPoints[1].y),
-                new org.opencv.core.Point(scaledPoints[2].x, scaledPoints[2].y),
-                new org.opencv.core.Point(scaledPoints[3].x, scaledPoints[3].y)
+                scaledPoints[0], scaledPoints[1], scaledPoints[2], scaledPoints[3]
             );
 
             MatOfPoint2f dstPoints = new MatOfPoint2f(
-                new org.opencv.core.Point(0, 0),
-                new org.opencv.core.Point(OUTPUT_WIDTH, 0),
-                new org.opencv.core.Point(OUTPUT_WIDTH, OUTPUT_HEIGHT),
-                new org.opencv.core.Point(0, OUTPUT_HEIGHT)
+                new Point(0, 0),
+                new Point(OUTPUT_WIDTH, 0),
+                new Point(OUTPUT_WIDTH, OUTPUT_HEIGHT),
+                new Point(0, OUTPUT_HEIGHT)
             );
 
             Mat transform = Imgproc.getPerspectiveTransform(srcPoints, dstPoints);
