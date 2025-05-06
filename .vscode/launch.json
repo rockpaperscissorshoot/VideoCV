@@ -4,7 +4,35 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
+        {
+            "type": "java",
+            "name": "LiveKeystoneCorrection",
+            "request": "launch",
+            "mainClass": "LiveKeystoneCorrection",
+            "projectName": "VideoCV_65828930"
+        },
+        {
+            "type": "java",
+            "name": "KeystoneCorrectionLive",
+            "request": "launch",
+            "mainClass": "KeystoneCorrectionLive",
+            "projectName": "VideoCV_65828930",
+            "vmArgs": "-Djava.library.path=C:/opencv/build/java/x64"
+        },
+        {
+            "type": "java",
+            "name": "CameraLiveFeed",
+            "request": "launch",
+            "mainClass": "CameraLiveFeed",
+            "projectName": "VideoCV_65828930"
+        },
+        {
+            "type": "java",
+            "name": "InteractiveQuadrilateral",
+            "request": "launch",
+            "mainClass": "InteractiveQuadrilateral",
+            "projectName": "VideoCV_65828930"
+        },
         {
             "type": "java",
             "name": "TrapezoidRectifier",
