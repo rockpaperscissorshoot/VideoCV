@@ -15,6 +15,8 @@ public class LiveKeystoneCorrection {
     private static Mat perspectiveMatrix = null;
     private static int frameWidth = 0;
     private static int frameHeight = 0;
+    private static int draggedPointIndex = -1;
+
 
     public static void main(String[] args) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -35,21 +37,47 @@ public class LiveKeystoneCorrection {
         videoPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                double xScale = (double) frameWidth / videoPanel.getWidth();
+                double yScale = (double) frameHeight / videoPanel.getHeight();
+                double scaledX = e.getX() * xScale;
+                double scaledY = e.getY() * yScale;
+        
+                for (int i = 0; i < points.size(); i++) {
+                    org.opencv.core.Point p = points.get(i);
+                    if (Math.hypot(p.x - scaledX, p.y - scaledY) < 20) {
+                        draggedPointIndex = i;
+                        return;
+                    }
+                }
+        
                 if (points.size() < 4) {
-                    // Scale the mouse coordinates to match the frame resolution
-                    double xScale = (double) frameWidth / videoPanel.getWidth();
-                    double yScale = (double) frameHeight / videoPanel.getHeight();
-
-                    double scaledX = e.getX() * xScale;
-                    double scaledY = e.getY() * yScale;
-
                     points.add(new org.opencv.core.Point(scaledX, scaledY));
                     System.out.println("Point added: " + scaledX + ", " + scaledY);
-
                     if (points.size() == 4) {
                         orderPoints();
                         updatePerspectiveMatrix();
                     }
+                }
+            }
+        
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                draggedPointIndex = -1;
+            }
+        });
+        
+
+        videoPanel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (draggedPointIndex != -1) {
+                    double xScale = (double) frameWidth / videoPanel.getWidth();
+                    double yScale = (double) frameHeight / videoPanel.getHeight();
+                    double scaledX = e.getX() * xScale;
+                    double scaledY = e.getY() * yScale;
+        
+                    points.set(draggedPointIndex, new org.opencv.core.Point(scaledX, scaledY));
+                    updatePerspectiveMatrix();
                 }
             }
         });
