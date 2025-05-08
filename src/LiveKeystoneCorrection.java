@@ -17,7 +17,6 @@ public class LiveKeystoneCorrection {
     private static int frameHeight = 0;
     private static int draggedPointIndex = -1;
 
-
     public static void main(String[] args) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         VideoCapture capture = new VideoCapture(0);
@@ -27,12 +26,21 @@ public class LiveKeystoneCorrection {
             return;
         }
 
+        // Main window for the video feed
         JFrame frame = new JFrame("Camera Feed");
         VideoPanel videoPanel = new VideoPanel();
         frame.setContentPane(videoPanel);
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        // New window for the corrected image
+        JFrame correctedFrame = new JFrame("Corrected Image");
+        CorrectedPanel correctedPanel = new CorrectedPanel();
+        correctedFrame.setContentPane(correctedPanel);
+        correctedFrame.setSize(800, 600);
+        correctedFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        correctedFrame.setVisible(true);
 
         videoPanel.addMouseListener(new MouseAdapter() {
             @Override
@@ -41,7 +49,7 @@ public class LiveKeystoneCorrection {
                 double yScale = (double) frameHeight / videoPanel.getHeight();
                 double scaledX = e.getX() * xScale;
                 double scaledY = e.getY() * yScale;
-        
+
                 for (int i = 0; i < points.size(); i++) {
                     org.opencv.core.Point p = points.get(i);
                     if (Math.hypot(p.x - scaledX, p.y - scaledY) < 20) {
@@ -49,7 +57,7 @@ public class LiveKeystoneCorrection {
                         return;
                     }
                 }
-        
+
                 if (points.size() < 4) {
                     points.add(new org.opencv.core.Point(scaledX, scaledY));
                     System.out.println("Point added: " + scaledX + ", " + scaledY);
@@ -59,13 +67,12 @@ public class LiveKeystoneCorrection {
                     }
                 }
             }
-        
+
             @Override
             public void mouseReleased(MouseEvent e) {
                 draggedPointIndex = -1;
             }
         });
-        
 
         videoPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -75,7 +82,7 @@ public class LiveKeystoneCorrection {
                     double yScale = (double) frameHeight / videoPanel.getHeight();
                     double scaledX = e.getX() * xScale;
                     double scaledY = e.getY() * yScale;
-        
+
                     points.set(draggedPointIndex, new org.opencv.core.Point(scaledX, scaledY));
                     updatePerspectiveMatrix();
                 }
@@ -96,7 +103,7 @@ public class LiveKeystoneCorrection {
             if (perspectiveMatrix != null) {
                 Mat corrected = new Mat();
                 Imgproc.warpPerspective(frameMat, corrected, perspectiveMatrix, new Size(frameWidth, frameHeight));
-                videoPanel.updateCorrectedImage(matToBufferedImage(corrected));
+                correctedPanel.updateCorrectedImage(matToBufferedImage(corrected)); // Update the new panel
             }
 
             try {
@@ -125,7 +132,7 @@ public class LiveKeystoneCorrection {
 
     private static void drawSelection(Mat frame) {
         for (org.opencv.core.Point p : points) {
-            Imgproc.circle(frame, (p), 10, new Scalar(0, 0, 255), -1);
+            Imgproc.circle(frame, (p), 5, new Scalar(0, 0, 255), -1);
         }
         if (points.size() >= 2) {
             for (int i = 0; i < points.size(); i++) {
@@ -154,15 +161,9 @@ public class LiveKeystoneCorrection {
 
     static class VideoPanel extends JPanel {
         private BufferedImage image;
-        private BufferedImage correctedImage;
 
         public void updateImage(BufferedImage img) {
             this.image = img;
-            repaint();
-        }
-
-        public void updateCorrectedImage(BufferedImage img) {
-            this.correctedImage = img;
             repaint();
         }
 
@@ -172,8 +173,22 @@ public class LiveKeystoneCorrection {
             if (image != null) {
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
             }
+        }
+    }
+
+    static class CorrectedPanel extends JPanel {
+        private BufferedImage correctedImage;
+
+        public void updateCorrectedImage(BufferedImage img) {
+            this.correctedImage = img;
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
             if (correctedImage != null) {
-                g.drawImage(correctedImage, 0, 0, getWidth(), getHeight() , null);
+                g.drawImage(correctedImage, 0, 0, getWidth(), getHeight(), null);
             }
         }
     }
