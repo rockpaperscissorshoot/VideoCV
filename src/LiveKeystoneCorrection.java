@@ -173,7 +173,7 @@ public class LiveKeystoneCorrection {
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
             }
             if (correctedImage != null) {
-                g.drawImage(correctedImage, getWidth() / 2, 0, getWidth() / 2, getHeight() / 2, null);
+                g.drawImage(correctedImage, 0, 0, getWidth(), getHeight() , null);
             }
         }
     }
