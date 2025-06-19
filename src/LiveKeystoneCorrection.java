@@ -26,7 +26,6 @@ public class LiveKeystoneCorrection {
             return;
         }
 
-        // Main window for the video feed
         JFrame frame = new JFrame("Camera Feed");
         VideoPanel videoPanel = new VideoPanel();
         frame.setContentPane(videoPanel);
@@ -34,7 +33,6 @@ public class LiveKeystoneCorrection {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        // New window for the corrected image
         JFrame correctedFrame = new JFrame("Corrected Image");
         CorrectedPanel correctedPanel = new CorrectedPanel();
         correctedFrame.setContentPane(correctedPanel);
@@ -103,11 +101,11 @@ public class LiveKeystoneCorrection {
             if (perspectiveMatrix != null) {
                 Mat corrected = new Mat();
                 Imgproc.warpPerspective(frameMat, corrected, perspectiveMatrix, new Size(frameWidth, frameHeight));
-                correctedPanel.updateCorrectedImage(matToBufferedImage(corrected)); // Update the new panel
+                correctedPanel.updateCorrectedImage(matToBufferedImage(corrected));
             }
 
             try {
-                Thread.sleep(30); // Simulate 30 FPS
+                Thread.sleep(30);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
@@ -115,8 +113,6 @@ public class LiveKeystoneCorrection {
     }
 
     private static void orderPoints() {
-        // Ensure points are ordered as top-left, top-right, bottom-right, bottom-left
-        // This is a placeholder; implement your own logic if needed
     }
 
     private static void updatePerspectiveMatrix() {
