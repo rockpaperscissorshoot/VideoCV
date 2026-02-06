@@ -9,6 +9,13 @@
             "name": "LiveKeystoneCorrection",
             "request": "launch",
             "mainClass": "LiveKeystoneCorrection",
+            "projectName": "VideoCV_2a154110"
+        },
+        {
+            "type": "java",
+            "name": "LiveKeystoneCorrection",
+            "request": "launch",
+            "mainClass": "LiveKeystoneCorrection",
             "projectName": "VideoCV_65828930"
         },
         {
