@@ -12,17 +12,17 @@ import java.util.List;
 
 public class LiveKeystoneCorrection {
     private static List<org.opencv.core.Point> points = new ArrayList<>();
-    private static Mat perspectiveMatrix = null;
+    private static Mat perspectiveMatrix = null; //This will hold the perspective transformation matrix after the user selects 4 points. It sound super duper cool I Think.
     private static int frameWidth = 0;
     private static int frameHeight = 0;
     private static int draggedPointIndex = -1;
 
     public static void main(String[] args) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        VideoCapture capture = new VideoCapture(0);
+        VideoCapture capture = new VideoCapture(0);// Open the default camera (0). You can change this if you have multiple cameras or want to use a video file. Possible next steps is to make it so a gui can pop up if user wants to iniatilize another camera or load a video file. That would be pretty cool.
 
         if (!capture.isOpened()) {
-            System.out.println("Error opening camera");
+            System.out.println("Error opening camera feed || Error code -1");
             return;
         }
 
@@ -48,6 +48,7 @@ public class LiveKeystoneCorrection {
                 double scaledX = e.getX() * xScale;
                 double scaledY = e.getY() * yScale;
 
+                //I'm not sure what i did here 
                 for (int i = 0; i < points.size(); i++) {
                     org.opencv.core.Point p = points.get(i);
                     if (Math.hypot(p.x - scaledX, p.y - scaledY) < 20) {
@@ -64,14 +65,17 @@ public class LiveKeystoneCorrection {
                         updatePerspectiveMatrix();
                     }
                 }
+                else {
+                    System.out.println("Already have 4 points. Drag existing points to adjust.");
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                draggedPointIndex = -1;
+                draggedPointIndex = -1; //not sure what this does either
             }
         });
-
+        // I remeber adding this and  i was super happy. Basically what it does is it allows the user to click and drag the points they have selected to adjust the perspective matrix in real time. I think it works well for now.
         videoPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -87,7 +91,7 @@ public class LiveKeystoneCorrection {
             }
         });
 
-        Mat frameMat = new Mat();
+        Mat frameMat = new Mat(); // This will hold the current frame from the camera feed. Basically frames the image renerated by the alreted perespective matrix. Possible improvemnts is to make sure point lines are drawn relative to the position of the corners of the screen. This way rotation/skewing of the camera feed.
         while (true) {
             if (!capture.read(frameMat) || frameMat.empty()) continue;
 
@@ -189,3 +193,4 @@ public class LiveKeystoneCorrection {
         }
     }
 }
+// Tada!!
