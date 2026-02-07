@@ -32,6 +32,3 @@ Anything Dowloadded throught github should look like this
 1. Ask my friends what I need to add to make this something worth shipping out
 
 ## Addtional Resources
-
-
-
